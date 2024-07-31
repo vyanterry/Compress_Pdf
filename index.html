@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kompres PDF</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.9.359/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://kit.fontawesome.com/87dd173a0d.js" crossorigin="anonymous"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+          
+          .app-bar {
+            background-color: #1955c3;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .sidebar {
+            width: 200px;
+            height: 100vh;
+            background-color: rgb(25, 138, 230);
+            position: fixed;
+            left: 0;
+            top: 0;
+            transition: transform 0.3s ease; 
+            padding: 20px;
+            color: rgb(255, 255, 255);
+        }
+
+        .sidebar-link {
+            color: rgb(255, 255, 255);
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            display: block;
+            text-decoration: none; 
+        }
+        .sidebar-link:hover {
+            background-color: rgba(255, 255, 255, 0.2); 
+        }
+
+        .sidebar.closed {
+            transform: translateX(-100%); 
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #00c6ff, #0072ff);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color:rgb(25, 138, 230);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .upload-area {
+        background-color: #1955c3;
+        color: rgb(255, 255, 255);
+        padding: 40px;
+        border-radius: 8px;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .upload-area.dragover {
+        background-color: #1648a0;
+    }
+        .file-input {
+        display: none;
+    }
+    
+    .file-label {
+        background-color: #ffffff;
+        color: rgb(0, 0, 0);
+        padding: 15px 30px;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+    }
+
+    .file-label:hover {
+        background-color:  rgb(25, 138, 230);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .file-label:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+        .info {
+            margin-top: 20px;
+            color: #666;
+        }
+        .features {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .compress-button {
+        background-color: #ffffff;
+        color: rgb(0, 0, 0);
+        border: none;
+        padding: 15px 2px;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .compress-button:hover {
+        background-color:  rgb(25, 138, 230);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .compress-button:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    
+    </style>
+</head>
+<body>
+
+    <div class="app-bar" style="padding: 20px;">
+        <img src="assets/bendera.png" alt="" style="position: absolute; top: 20px; left: 20px; width: 40px; height: auto;">
+        <button onclick="toggleSidebar()" style=" position: absolute; top: 20px; right: 20px; width: 50px; height: 40px; background: none; border: none; color: white; cursor: pointer;"><i class="fa-solid fa-bars fa-2x"></i>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <button onclick="toggleSidebar()" style="background: none; border: none; color: rgb(248, 248, 248); cursor: pointer; position: absolute; top: 20px; right: 20px;">
+            <i class="fa-solid fa-times fa-2x"></i> <!-- Ikon untuk menutup sidebar -->
+        </button>
+        <img src="assets/bendera.png" alt="" style=" top: 20px; left: 20px; width: 40px; height: auto;">
+        <h2>MENU</h2>
+        <ul>
+            <li><a href="index.html" class="sidebar-link">Home</a></li>
+            <li><a href="tentang.html" class="sidebar-link">About</a></li>
+            <li><a href="kontak.html" class="sidebar-link">Contact</a></li>
+        </ul>
+    </div>
+
+
+    <div class="container">
+        <h1>Kompres PDF</h1>
+        <div class="upload-area" id="dropArea">
+            <label for="pdfFile" class="file-label">PILIH FILE</label>
+            <input type="file" id="pdfFile" class="file-input" accept=".pdf" onchange="handleFileSelect(this.files)">
+            <span id="fileName"></span>
+            <button onclick="compressPDF()" class="compress-button">Kompres PDF</button>
+        </div>
+        <div class="features">
+            <div>
+                <div class="feature">
+                    <span class="feature-icon">✅</span>
+                    <span style="color: white;">Mengurangi ukuran file</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✅</span>
+                    <span style="color: white;">Dijamin Mantap</span>
+                </div>
+                <div class="feature">
+                    <span class="feature-icon">✅</span>
+                    <span style="color: white;">Puas 100%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+  
+  function showFileName() {
+        const fileInput = document.getElementById('pdfFile');
+        const fileNameSpan = document.getElementById('fileName');
+        if (fileInput.files.length > 0) {
+            fileNameSpan.textContent = 'File terpilih: ' + fileInput.files[0].name;
+        } else {
+            fileNameSpan.textContent = '';
+        }
+    }
+
+    function handleFileSelect(files) {
+        if (files.length > 0) {
+            document.getElementById('fileName').textContent = 'File terpilih: ' + files[0].name;
+        } else {
+            document.getElementById('fileName').textContent = '';
+        }
+    }
+
+    function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('closed');
+            const container = document.getElementById('container');
+            container.style.marginLeft = sidebar.classList.contains('closed') ? '20px' : '220px'; // Sesuaikan margin kontainer
+        }
+
+
+    async function compressPDF() {
+        const fileInput = document.getElementById('pdfFile');
+        const file = fileInput.files[0];
+        if (!file) {
+            alert('Silakan pilih file PDF terlebih dahulu.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const pdfData = new Uint8Array(e.target.result);
+            const pdfDoc = await pdfjsLib.getDocument({data: pdfData}).promise;
+            const numPages = pdfDoc.numPages;
+
+            const jsPDF = window.jspdf.jsPDF;
+            const newPdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'pt',
+                format: 'a4'
+            });
+
+            for (let i = 1; i <= numPages; i++) {
+                const page = await pdfDoc.getPage(i);
+                const scale = 1.6; 
+                const viewport = page.getViewport({scale: scale});
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                await page.render({canvasContext: context, viewport: viewport}).promise;
+                const imgData = canvas.toDataURL('image/jpeg', 0.4);
+                
+                if (i > 1) newPdf.addPage();
+                
+                newPdf.addImage(imgData, 'JPEG', 0, 0, newPdf.internal.pageSize.getWidth(), newPdf.internal.pageSize.getHeight(), '', 'MEDIUM');
+            }
+
+            function handleFileSelect(files) {
+            if (files.length > 0) {
+                document.getElementById('fileName').textContent = 'File terpilih: ' + files[0].name;
+            }
+        }
+
+        const dropArea = document.getElementById('dropArea');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropArea.classList.add('dragover');
+        }
+
+        function unhighlight() {
+            dropArea.classList.remove('dragover');
+        }
+
+        dropArea.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFileSelect(files);
+        }
+
+
+            newPdf.save('compressed.pdf', {compress: true});
+        };
+        reader.readAsArrayBuffer(file);
+    }
+    </script>
+</body>
+</html>
